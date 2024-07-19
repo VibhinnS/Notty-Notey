@@ -42,7 +42,13 @@ def get_routes(request):
 
 
 @api_view(["GET"])
-def get_notes(request, pk):
+def get_notes(request):
+    notes = Note.objects.all()
+    serialized_note_data = Note_Serializer(notes, many=True)
+    return Response(serialized_note_data.data)
+
+@api_view(["GET"])
+def get_single_note(request, pk):
     notes = Note.objects.get(id=pk)
     serialized_note_data = Note_Serializer(notes, many=False)
     return Response(serialized_note_data.data)
