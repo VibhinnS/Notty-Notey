@@ -1,30 +1,52 @@
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 const NotePage = () => {
     const { id } = useParams();
-    const [note, setNote] = useState(null)
-    useEffect(() => {
-        getNote()
-    }, [id])
-    let getNote = async () => {
-        let response = await fetch(`/api/notes/${id}`)
-        let data = await response.json()
-        setNote(data)
-    }
+    const navigate = useNavigate();
+    const [note, setNote] = useState({ body: '' });
 
-    let updateNote = async () => {
-        fetch(`/api/notes/${id}/update`, {
+    useEffect(() => {
+        getNote();
+    }, [id]);
+
+    const getNote = async () => {
+        let response = await fetch(`/api/notes/${id}`);
+        let data = await response.json();
+        setNote(data);
+    };
+
+    const updateNote = async () => {
+        const response = await fetch(`/api/notes/${id}/update`, {
             method: "PUT",
             headers: {
                 'Content-Type': "application/json"
             },
             body: JSON.stringify(note)
-    })
-}
-    return (
-        <textarea onChange={(e) => {setNote({...note, 'body':e.target.value})}} defaultValue={note?.body}></textarea>
-  )
-}
+        });
 
-export default NotePage
+        if (response.ok) {
+            const updatedNote = await response.json();
+            setNote(updatedNote);
+        } else {
+            console.error("Failed to update the note");
+        }
+    };
+
+    const handleSubmit = async () => {
+        await updateNote();
+        navigate('/');
+    };
+
+    return (
+        <div>
+            <textarea
+                onChange={(e) => setNote({ ...note, 'body': e.target.value })}
+                value={note.body}
+            />
+            <button onClick={handleSubmit}>Save</button>
+        </div>
+    );
+};
+
+export default NotePage;
