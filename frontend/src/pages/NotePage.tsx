@@ -12,8 +12,18 @@ const NotePage = () => {
         let data = await response.json()
         setNote(data)
     }
+
+    let updateNote = async () => {
+        fetch(`/api/notes/${id}/update`, {
+            method: "PUT",
+            headers: {
+                'Content-Type': "application/json"
+            },
+            body: JSON.stringify(note)
+    })
+}
     return (
-        <div>{note?.body}</div>
+        <textarea onChange={(e) => {setNote({...note, 'body':e.target.value})}} defaultValue={note?.body}></textarea>
   )
 }
 

@@ -52,3 +52,14 @@ def get_single_note(request, pk):
     notes = Note.objects.get(id=pk)
     serialized_note_data = Note_Serializer(notes, many=False)
     return Response(serialized_note_data.data)
+
+@api_view(['PUT'])
+def update_note(request, pk):
+    data = request.data
+    current_note = Note.objects.get(id=pk)
+    serializer = Note_Serializer(instance=note, data=data)
+    
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)
